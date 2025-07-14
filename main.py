@@ -2,12 +2,14 @@ import sys
 import os
 import tkinter as tk
 from tkinter import scrolledtext, messagebox
-from modules.limpiador_excel import limpiar_excel
-from modules.auth import usuarios_validos, usuarios_nombres  # solo diccionarios
-from modules.ui import crear_interfaz  # interfaz para usar tras login
 
-# Asegurar que se puedan importar módulos desde la carpeta actual
-sys.path.append(os.path.dirname(__file__))
+# Asegurar que se puedan importar módulos desde la carpeta 'modules'
+sys.path.append(os.path.join(os.path.dirname(__file__), "modules"))
+
+# Importar módulos del sistema
+from limpiador_excel import limpiar_excel
+from auth import usuarios_validos, usuarios_nombres
+from ui import crear_interfaz
 
 def mostrar_bienvenida():
     texto = """
@@ -16,7 +18,7 @@ def mostrar_bienvenida():
 🔹 Introducción
 
 SafeSoft+ es una plataforma interactiva diseñada para evaluar la calidad y seguridad de aplicaciones de software.  
-La herramienta permite a desarrolladores, testers y docentes realizar auditorías rápidas sobre aspectos fundamentales  
+Permite a desarrolladores, testers y docentes realizar auditorías rápidas sobre aspectos fundamentales  
 como funcionalidad, usabilidad, confiabilidad y medidas básicas de seguridad.
 
 🎯 Objetivo General
@@ -46,21 +48,29 @@ y protección de datos) en aplicaciones desarrolladas bajo metodologías ágiles
 
 📂 Estructura del Proyecto
 
-SafeSoftPlus/  
-│  
-├── main.py                      ← Archivo principal que ejecuta la aplicación  
-├── README.md                    ← Documentación general del proyecto en formato Markdown  
-├── manual_programador.md        ← Manual del Programador en formato Markdown  
-├── manual_usuario.md            ← Manual del Usuario en formato Markdown  
-├── requirements.txt             ← Archivo con las dependencias necesarias para ejecutar el proyecto  
-├── evaluaciones_tk.xlsx         ← Archivo donde se guardan los resultados de las evaluaciones  
-├── convertidor_docx.py          ← Módulo para la conversión y manejo de documentos `.docx`  
-└── modules/                     ← Carpeta con los módulos principales del sistema  
-    ├── auth.py                  ← Lógica y gestión de autenticación y roles de usuario  
-    ├── ui.py                    ← Interfaz gráfica y funcionalidades de evaluación  
-    ├── utils.py                 ← Funciones utilitarias y apoyo para la visualización de documentación  
-    └── limpiador_excel.py       ← Limpieza automática de evaluaciones con datos inválidos
-    """
+ SafeSoftPlus/
+│
+├── main.py                       # Archivo principal para ejecutar la app
+├── README.md                     # Documentación general
+├── manual_usuario.md             # Manual del usuario final
+├── manual_programador.md         # Manual del programador
+├── requirements.txt              # Librerías necesarias
+├── evaluaciones_tk.xlsx          # Base de datos de evaluaciones en Excel
+├── convertir_docx.py             # Conversión o lectura de archivos .docx
+│
+├── reportes/                     # Carpeta de reportes generados (PDF, imágenes)
+│   └── ... (se generan dinámicamente)
+│
+├── modules/                      # Lógica modular del proyecto
+│   ├── __init__.py               # (opcional, puede estar vacío)
+│   ├── auth.py                   # Usuarios y contraseñas (login)
+│   ├── data.py                   # Diccionarios, configuraciones
+│   ├── evaluacion.py             # Reglas de evaluación (opcional)
+│   ├── limpiador_excel.py        # Limpieza de datos previos en Excel
+│   ├── reportes.py               # Generación de reportes en PDF
+│   ├── ui.py                     # Interfaz principal tras login
+│   └── utils.py                  # Funciones auxiliares
+"""
 
     ventana = tk.Tk()
     ventana.title("Bienvenida a SafeSoft+")
@@ -72,7 +82,6 @@ SafeSoftPlus/
     texto_area.pack(expand=True, fill="both", padx=10, pady=10)
 
     tk.Button(ventana, text="Iniciar Aplicación", command=ventana.destroy).pack(pady=10)
-
     ventana.mainloop()
 
 def mostrar_login():
@@ -103,6 +112,10 @@ def mostrar_login():
     ventana_login.mainloop()
 
 if __name__ == "__main__":
-    limpiar_excel()  # limpiar datos inválidos antes de empezar
+    try:
+        limpiar_excel()  # limpia datos inválidos del Excel antes de comenzar
+    except Exception as e:
+        print(f"[!] Error al limpiar Excel: {e}")
+
     mostrar_bienvenida()
     mostrar_login()
